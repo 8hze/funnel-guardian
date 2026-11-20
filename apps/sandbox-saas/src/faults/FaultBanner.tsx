@@ -14,7 +14,7 @@ export function FaultBanner({ active }: { active: boolean }) {
       id="promo-consent-banner"
       data-fault-id="checkout-mobile-overlap"
       data-obstructs-mobile-cta="true"
-      className="fixed inset-x-0 bottom-0 z-[60] flex h-[216px] flex-col justify-between border-t-2 border-amber-500/80 bg-[#141518] px-5 py-5 text-[#F2F3F5] md:hidden"
+      className="sticky top-0 z-20 border-b border-stone-300 bg-stone-100 px-4 py-2.5 text-xs text-stone-700"
     >
       <div>
         <div className="flex items-center justify-between">
