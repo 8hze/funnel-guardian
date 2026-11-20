@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {
+  buildRateLimitHeaders,
+  checkRateLimit,
+  RATE_LIMIT_POLICIES,
+} from '@/lib/rate-limit';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
+import {
   GitHubAdapter,
   LinearAdapter,
   runFunnelGuardianPipeline,
@@ -162,6 +168,33 @@ async function probeWithFallback(
 }
 
 export async function POST(request: NextRequest) {
+  // Mandatory Supabase server-verified JWT authentication
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return NextResponse.json(
+      { error: 'Authentication required. Please sign in to execute Funnel Guardian probes.' },
+      { status: 401 }
+    );
+  }
+
+  // Per-operator sliding-window API rate limit (30 runs / 60s)
+  const rl = checkRateLimit(RATE_LIMIT_POLICIES.guardianApi, user.id);
+  const rlHeaders = buildRateLimitHeaders(rl);
+  if (!rl.allowed) {
+    return NextResponse.json(
+      {
+        error: `Mission Control API rate limit reached. Retry in ${rl.retryAfterSec}s.`,
+        code: 'rate_limited',
+        rateLimit: rl,
+      },
+      { status: 429, headers: rlHeaders }
+    );
+  }
+
   const body = (await request.json().catch(() => ({}))) as RunRequestBody;
   const origin = new URL(request.url).origin;
   const firstPartyHost = new URL(request.url).host;
@@ -208,11 +241,15 @@ export async function POST(request: NextRequest) {
     results.push(result);
   }
 
-  return NextResponse.json({
-    results,
-    budget,
-    dedupeRecords: dedupe.list(),
-    linearTickets: linear.list(),
-    pullRequests: github.list(),
-  });
+  return NextResponse.json(
+    {
+      results,
+      budget,
+      dedupeRecords: dedupe.list(),
+      linearTickets: linear.list(),
+      pullRequests: github.list(),
+      rateLimit: rl,
+    },
+    { headers: rlHeaders }
+  );
 }

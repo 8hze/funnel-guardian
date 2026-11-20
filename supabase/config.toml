@@ -1,0 +1,25 @@
+project_id = "caeqprnmyryymuujktck"
+
+[auth]
+enabled = true
+site_url = "https://funnel-guardian.vercel.app"
+additional_redirect_urls = [
+  "https://funnel-guardian.vercel.app/**",
+  "http://localhost:3000/**"
+]
+jwt_expiry = 3600
+enable_refresh_token_rotation = true
+refresh_token_reuse_interval = 10
+enable_signup = true
+minimum_password_length = 8
+password_requirements = "lower_upper_letters_digits"
+
+[auth.email]
+enable_signup = true
+double_confirm_changes = true
+enable_confirmations = false
+
+[auth.rate_limit]
+sign_in_sign_ups = 20
+token_refresh = 60
+token_verifications = 20
