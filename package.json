@@ -1,0 +1,22 @@
+{
+  "name": "funnel-guardian",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Autonomous revenue-funnel reliability and self-healing system for SaaS signup, OAuth, onboarding, and Stripe checkout.",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm --workspace @funnel-guardian/sandbox-saas run dev",
+    "build": "npm --workspace @funnel-guardian/sandbox-saas run build",
+    "start": "npm --workspace @funnel-guardian/sandbox-saas run start",
+    "test": "npm --workspace @funnel-guardian/triage-gate run test",
+    "probe": "npm --workspace @funnel-guardian/probe run probe --",
+    "benchmark": "npm --workspace @funnel-guardian/probe run benchmark --",
+    "typecheck": "npm --workspace @funnel-guardian/triage-gate run typecheck && npm --workspace @funnel-guardian/orchestrator run typecheck && npm --workspace @funnel-guardian/probe run typecheck && npm --workspace @funnel-guardian/sandbox-saas run typecheck"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "@funnel-guardian/triage-gate",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "node --test src/triage-gate.test.ts",
+    "typecheck": "tsc --noEmit"
+  }
+}
